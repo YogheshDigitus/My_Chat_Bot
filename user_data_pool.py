@@ -8,7 +8,7 @@ try:
                      minPoolSize=1,
                      maxIdleTimeMS=30000,
                      waitQueueTimeoutMS=10000)
-    mongo_db = mongo_client["Digi_chat_memory"]
+    mongo_db = mongo_client["chat"]
     counters_collection = mongo_db["counters"]
     users_collection = mongo_db["user"]
     print("MongoDB connection established")

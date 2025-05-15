@@ -3,13 +3,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 # from langchain.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.llms import Ollama
 from chromadb.utils.embedding_functions import OpenCLIPEmbeddingFunction
 from langchain.schema import Document
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from openai import OpenAI
 from langchain.chains import LLMChain
-from langchain_core.output_parsers import StrOutputParser
 import torch
 from transformers import CLIPModel, CLIPProcessor
 from langchain.embeddings.base import Embeddings
@@ -18,15 +18,37 @@ import numpy as np
 import chromadb
 # from langchain.retrievers import VectorstoreRetriever
 from langchain.prompts import FewShotPromptTemplate, PromptTemplate
+from dotenv import load_dotenv
+
+load_dotenv()
 from langchain.globals import set_debug
 from langchain_openai import ChatOpenAI
 from operator import itemgetter
 from langchain.retrievers import (ContextualCompressionRetriever, MergerRetriever, )
 
+# DocumentCompressorPipeline
 
-from dotenv import load_dotenv
-load_dotenv()
-client = OpenAI()
+
+set_debug(True)
+
+import openai
+import os
+# client = OpenAI()
+# chroma_client = chromadb.PersistentClient(path=r"C:\Users\DELL\Desktop\Chatbot\My_chat_bot\VectorDB")# can also use server local
+# Define your API key
+# openai.api_key = 'your_openai_api_key'
+
+
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
+import openai
+from langchain.retrievers import MultiQueryRetriever
+
+import pprint
 
 # Define the custom prompt template
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")  # CLIP for both text and image embeddings
@@ -72,11 +94,15 @@ def is_requesting_image(user_query):
         return False
 
 def rag_pipeline_with_prompt(query, chat_history):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = Ollama(model="qwen2.5:1.5b")
     # Define your prompt template
     template = """
     You are a help desk technician called Lilis from Linxens company. You are interacting with a user who is asking you questions about the company's issues. Based on the following user question and context provided, please give detailed answer to the user question.
     don't give any thing apart from answer.
+    If the user ask the summary generate a concise and engaging summary of the topic, focusing on:
+        A brief introduction to the subject or product.
+        Key topics or features covered in the document.
+        A close by encouragingx users to explore or use the content
     Don't include irrelavent information like legal disclaimers, proprietary information, or structural like page number, index etc.
     They to be as comprehensive as possible giving well rounded answer
     If you don't know the answer or it is not present in context provided, just say that you don't know, don't try to 
@@ -95,11 +121,7 @@ def rag_pipeline_with_prompt(query, chat_history):
     )
 
     # Load ChromaDB client
-<<<<<<< HEAD
     persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_chat_bot\VectorDB"
-=======
-    persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_chatbot\VectorDB"
->>>>>>> origin/updated_features
     chroma_client = chromadb.PersistentClient(persist_directory)
     clip_embeddings = CLIPEmbeddings()
     # Retrieve the collection that contains your embeddings (assuming it's stored under a name like "documents")
@@ -200,7 +222,7 @@ def rag_pipeline_with_prompt(query, chat_history):
     return result,image_path
 
 def Get_summary(context):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    llm = Ollama(model="qwen2.5:1.5b")
     # # Now, prepare the retriever if necessary (same as before)
     template = """
     Your are providing the summary of the document the user has upload.
@@ -212,6 +234,7 @@ def Get_summary(context):
     If you don't know the answer or it is not present in context provided, just say that you don't know, don't try to 
     make up an answer.
     Do not make assumptions or provide information beyond the given context.
+    \n\n
     Context: {context}"""
     prompt_final = PromptTemplate(
         template=template,
