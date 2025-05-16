@@ -68,6 +68,7 @@ class PDFProcessor:
         self.clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")  # CLIP processor for images
         self.subject = None
         self.device= "cpu"
+        self.embedding = OpenCLIPEmbeddingFunction()
 
     def process(self, filename):
         """Process the PDF, extract text, images, and store them in Chroma."""
@@ -114,7 +115,7 @@ class PDFProcessor:
                                 image_path = os.path.join(output_image_dir, image_filename)
                                 image.save(image_path)
                                 print(image_path)
-                                image_match_list[page_num][img_index]=os.path.basename(image_path)
+                                image_match_list[page_num][img_index]=image_path
                 metadata=metadata+[ {'subject': self.subject,'type':'text','file_type': 'PDF','image_ref_num':page_num,"image_file":image_mapping_file} for i in chunk]
                 chunks=chunks+chunk
         with open(image_mapping_file, 'w') as f:

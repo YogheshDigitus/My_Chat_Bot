@@ -6,7 +6,7 @@ import numpy as np
 import chromadb
 from langchain.chains import RetrievalQA
 from sklearn.metrics.pairwise import cosine_similarity
-from langchain_ollama.llms import OllamaLLM
+from langchain_community.llms import Ollama
 # from langchain.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from chromadb.utils.embedding_functions import OpenCLIPEmbeddingFunction
@@ -113,7 +113,7 @@ def rag_pipeline_with_prompt(query,chat_history):
     )
 
     # Load ChromaDB client
-    persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_chatbot\VectorDB"
+    persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_Chat_Bot\VectorDB"
     chroma_client = chromadb.PersistentClient(persist_directory)
     clip_embeddings = CLIPEmbeddings()
     # Retrieve the collection 

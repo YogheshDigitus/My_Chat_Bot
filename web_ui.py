@@ -4,7 +4,7 @@ from PIL import Image
 from docx2pdf import convert
 import numpy as np
 import pythoncom
-from OpenAI_rag_chain_version import rag_pipeline_with_prompt,Get_summary
+from OpenAI_rag_chain_version_testing import rag_pipeline_with_prompt,Get_summary
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
@@ -124,16 +124,20 @@ if user_query is not None and user_query.strip() != "":
                             Chat_Message_History.add_ai_message(response)
                             st.session_state.chat_history.append(AIMessage(content=response))
                     count=0
+                    
                     for i in image_pat:
                               # Loop through each image path in the list
                             try:
-                                if i!='':
-                                    image = Image.open(fr'C:\Users\DELL\Desktop\Chatbot\My_chat_bot\{i}')  # Open the image using PIL
+                                if i!=None:
+                                    image = Image.open(fr'{i}')  # Open the image using PIL
                                     if count<2:
                                         st.image(image)
                                 count=count+1
                             except Exception as e:
                                 st.warning(f"Could not load image {i}: {str(e)}")
+                    # for i in image_pat:
+                    #     st.markdown(i)
+            
             else:
                 st.markdown(response)
                 Chat_Message_History.add_user_message(user_query)
@@ -203,8 +207,10 @@ with st.sidebar:
                     else:
                         work_file_path = os.path.join(work_folder, each_file.name)
                         archive_file_path = os.path.join(archive_folder, each_file.name)
+                        with open(work_file_path, "wb") as f:
+                            f.write(each_file.getbuffer())
                     st.write(f"Processing {each_file.name}...")
-                    ppt_process_file(work_file_path)
+                    process_file(work_file_path)
                     st.session_state['pdf_upload_status'] = f"Successfully processed and moved {each_file.name}"
                     path=path+fr"{work_file_path}.text"
                     paths.append(path)

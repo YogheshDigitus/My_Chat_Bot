@@ -4,7 +4,7 @@ from PIL import Image
 from docx2pdf import convert
 import numpy as np
 import pythoncom
-from Qwen_web_ui import rag_pipeline_with_prompt,Get_summary
+from Qwen2_5_rag_chain_version import rag_pipeline_with_prompt,Get_summary
 from langchain.prompts import PromptTemplate
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI

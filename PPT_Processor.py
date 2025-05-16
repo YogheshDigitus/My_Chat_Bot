@@ -23,6 +23,7 @@ from docx import Document as DocxDocument
 from sklearn.metrics.pairwise import cosine_similarity
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
+from header_Footer_watermark import crop_fixed_header_footer_and_remove_images
 
 #setting up OpenAI using API
 from openai import OpenAI
@@ -122,6 +123,7 @@ def process_file(file_path):
     file_name = os.path.basename(file_path)
     file = os.path.splitext(file_name)
     filename = file[0]
+    path_without_ext = os.path.splitext(file_path)[0]
     
     if file_extension in ['.pptx',".ppt"]:
         initialize_com()
@@ -130,7 +132,9 @@ def process_file(file_path):
         file_path=file_path.replace(file_extension,".pdf")
         processor = PPT_Processor(file_path,file_extension)
     elif file_extension in [".pdf"]:
-         processor = PPT_Processor(file_path,file_extension)
+        output_file=f"{path_without_ext}_updated.pdf"
+        crop_fixed_header_footer_and_remove_images(file_path,output_file)
+        processor = PPT_Processor(file_path,file_extension)
     else:
         raise ValueError(f"Unsupported file type: {file_extension}")
     processor.process(filename)
