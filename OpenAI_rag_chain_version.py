@@ -95,11 +95,7 @@ def rag_pipeline_with_prompt(query, chat_history):
     )
 
     # Load ChromaDB client
-<<<<<<< HEAD
     persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_chat_bot\VectorDB"
-=======
-    persist_directory = r"C:\Users\DELL\Desktop\Chatbot\My_chatbot\VectorDB"
->>>>>>> origin/updated_features
     chroma_client = chromadb.PersistentClient(persist_directory)
     clip_embeddings = CLIPEmbeddings()
     # Retrieve the collection that contains your embeddings (assuming it's stored under a name like "documents")
